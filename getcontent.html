@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Get Content</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!-- Add custom CSS here -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand"><a href="starthere.html">Start Here</a>
+                </li>
+                <li><a href="gettingstarted.html">Getting Started</a>
+                </li>
+                <li><a href="apioverview.html">API Overview</a>
+                </li>
+                <li><a href="getcontent.html">Get Catalog Data</a>
+                </li>
+                <li><a href="getuserdata.html">Get User Data</a>
+                </li>
+                <li><a href="#">Project Gallery</a>
+                </li>    
+            </ul>
+        </div>
+
+        <!-- Page content -->
+        <div id="page-content-wrapper">
+            <div class="content-header">
+                <h1>
+                    <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
+                    Get Content
+                </h1>
+            </div>
+            <!-- Keep all page content within the page-content inset div! -->
+            <div class="page-content inset">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="lead">This tutorial will show you how to create a small client side application that retrieves an artist's albums using the search endpoint. Before we write any code, lets go over how the Search API endpoint works.</p>
+                        <h3>Endpoint</h3>
+                        <p class="lead">The search endpoint via a GET request allows you to retrieve artists, albums, tracks and playlists that match a string. Below are the parameters it takes. q is the the query. Type sets the kind of information we are looking for. Market restricts the results to a country code. Limit sets the max amount of results to return. And offset sets the first result to return.</p> 
+                        <pre>URL: https://api.spotify.com/v1/search<br>HTTP method: GET<br>Request Parameters:<br><li>q: query<br><li>type: album, artist, playlist, track</li><li>market: country</li<br><li>limit: 1-50</li<br><li>offset: index 0 - 100,000</li></pre>
+                       <h3> Making a Request</h3>
+                       <p class="lead">For this example, we are going to request The Rolling Stone's albums and will return the 1st result. Below is the URL we will be sending in the GET request. We pass it 3 parameters: the query "The Rolling Stones", the type album, and a limit of 1. 
+                        <pre><code>https://api.spotify.com/v1/search?q=The+Rolling+Stones&type=album&limit=1</code></pre>
+                        <p class="lead">Copy and past the cURL command below into the terminal.</p>
+                       <pre>curl -X GET "https://api.spotify.com/v1/search?q=The+Rolling+Stones&amp;type=album&amp;limit=1" -H "Accept: application/json"</pre>
+                       <p class="lead">The request is sent to the server and it returns the  JSON below.</p>
+                    <pre class="pre-x-scrollable"><code class="json">{
+  &#34;albums&#34; : {
+    &#34;href&#34; : &#34;https://api.spotify.com/v1/search?query=The+Rolling+Stones&amp;type=album&amp;offset=0&amp;limit=1&#34;,
+    &#34;items&#34; : [ {
+      &#34;album_type&#34; : &#34;album&#34;,
+      &#34;artists&#34; : [ {
+        &#34;external_urls&#34; : {
+          &#34;spotify&#34; : &#34;https://open.spotify.com/artist/22bE4uQ6baNwSHPVcDxLCe&#34;
+        },
+        &#34;href&#34; : &#34;https://api.spotify.com/v1/artists/22bE4uQ6baNwSHPVcDxLCe&#34;,
+        &#34;id&#34; : &#34;22bE4uQ6baNwSHPVcDxLCe&#34;,
+        &#34;name&#34; : &#34;The Rolling Stones&#34;,
+        &#34;type&#34; : &#34;artist&#34;,
+        &#34;uri&#34; : &#34;spotify:artist:22bE4uQ6baNwSHPVcDxLCe&#34;
+      } ],
+      &#34;available_markets&#34; : [ &#34;CA&#34;, &#34;US&#34; ],
+      &#34;external_urls&#34; : {
+        &#34;spotify&#34; : &#34;https://open.spotify.com/album/4l4u9e9jSbotSXNjYfOugy&#34;
+      },
+      &#34;href&#34; : &#34;https://api.spotify.com/v1/albums/4l4u9e9jSbotSXNjYfOugy&#34;,
+      &#34;id&#34; : &#34;4l4u9e9jSbotSXNjYfOugy&#34;,
+      &#34;images&#34; : [ {
+        &#34;height&#34; : 640,
+        &#34;url&#34; : &#34;https://i.scdn.co/image/eda50e6eb9d59e339baf96b3b98d6e9ae8a8ee95&#34;,
+        &#34;width&#34; : 640
+      }, {
+        &#34;height&#34; : 300,
+        &#34;url&#34; : &#34;https://i.scdn.co/image/88169c4f1e5666f1120f04730891720976db1653&#34;,
+        &#34;width&#34; : 300
+      }, {
+        &#34;height&#34; : 64,
+        &#34;url&#34; : &#34;https://i.scdn.co/image/be1aba99b46127c747e4142ad23f2161b9b9871b&#34;,
+        &#34;width&#34; : 64
+      } ],
+      &#34;name&#34; : &#34;Let It Bleed&#34;,
+      &#34;type&#34; : &#34;album&#34;,
+      &#34;uri&#34; : &#34;spotify:album:4l4u9e9jSbotSXNjYfOugy&#34;
+    } ],
+    &#34;limit&#34; : 1,
+    &#34;next&#34; : &#34;https://api.spotify.com/v1/search?query=The+Rolling+Stones&amp;type=album&amp;offset=1&amp;limit=1&#34;,
+    &#34;offset&#34; : 0,
+    &#34;previous&#34; : null,
+    &#34;total&#34; : 468
+  }
+}</code></pre>
+                    <h3>Code Example</h3>
+                    <p class="lead"> Now that we're familar with how the API works we are going to use it to make a webpage that searches for an artist's albums and displays the results. First, we will need a way to display the content. Create a new file with the HTML below.</p> 
+                    <pre><code>&lt;div class="col-md-6"&gt;<br> &lt;h1&gt;Get Albums&lt;/h1&gt;<br> &lt;form id="search-form"&gt;<br>   &lt;input type="text" id="query" value="" class="form-control" placeholder="Type an Artist Name"/&gt;<br>   &lt;input type="submit" id="search" class="btn btn-default" value="Search"/&gt;<br> &lt;/form&gt;<br> &lt;div id="results"&gt;&lt;/div&gt;<br>&lt;/div&gt;</code></pre>
+                     <p class="lead"> With our view created, we will now write a script that retrieves the content using AJAX. We open a get request and pass 2 parameters: the query and a type of album. We then pass in the parsed response into a function that displays the album covers to the page.</p> 
+                     <pre><code>//  Search Button Event Listener
+document.getElementById('search-form').addEventListener('submit', searchQuery);
+
+// Get Albums
+function searchQuery(event) {
+    var query = document.getElementById("query").value;
+    var req = new XMLHttpRequest(); 
+    var url = "https://api.spotify.com/v1/search?q=" + query + "&type=album";
+    req.open("GET", url, true);
+    req.addEventListener('load', function() {
+      if(req.status >= 200 && req.status < 400){
+        var response = JSON.parse(req.responseText);
+        displayAlbums(response);
+      } else {
+          console.log("Error in network request: " + req.statusText);
+      }
+    });
+
+    req.send(null);
+    event.preventDefault();
+}   
+
+// Append albums to div
+function displayAlbums(object) {
+    var albumArray = object.albums.items;
+    var results = document.getElementById("results");
+    while (results.firstChild) {
+      results.removeChild(results.firstChild);
+    }
+    for (var i = 0; i < albumArray.length; i++) {   
+        var image = document.createElement("IMG");
+        image.className = "cover";
+        image.setAttribute("src", albumArray[i].images[0].url );
+        results.appendChild(image);
+    }
+}</code></pre>
+                     <p class="lead"> With our files created and with a little css magic, we get the result below.</p> 
+                     <script async src="//jsfiddle.net/cisnejos/Le41tv3a/7/embed/js,html,css/?accentColor=000000"></script>
+                    <div class="col-md-12">
+                        <h2>Get Albums</h2>
+                        <form id="search-form">
+                            <input type="text" id="query" value="" class="form-control" placeholder="Type an Artist Name"/>
+                            <input type="submit" id="search" class="btn btn-default" value="Search" />
+                        </form>
+                        <div id="results"></div>
+                    <script src="js/script.js"></script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/bootstrap.js"></script>
+
+    <!-- Custom JavaScript for the Menu Toggle -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("active");
+    });
+    </script>
+</body>
+
+</html>
+
+
+

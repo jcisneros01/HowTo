@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Get Content</title>
+    <title>API Overview</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -39,36 +39,35 @@
                 </li>    
             </ul>
         </div>
-
+    
         <!-- Page content -->
         <div id="page-content-wrapper">
             <div class="content-header">
                 <h1>
                     <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
-                    Dashboard
+                    API Overview
                 </h1>
             </div>
             <!-- Keep all page content within the page-content inset div! -->
             <div class="page-content inset">
                 <div class="row">
                     <div class="col-md-12">
-                        <p class="lead">This simple sidebar template has a hint of JavaScript to make the template responsive. It also includes Font Awesome icon fonts.</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="well">The template still uses the default Bootstrap rows and columns.</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="well">But the full-width layout means that you wont be using containers.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p class="well">Three Column Example</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p class="well">Three Column Example</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p class="well">You get the idea! Do whatever you want in the page content area!</p>
-                    </div>
+                        <h3>End Points</h3>
+                        <p class="lead">
+                        The API allows client applications to access music catalog content and user data through several endpoints at the base URL: https://api.spotify.com. Each endpoint has it's own unique path.  For a list of the different available endpoints visit the <a href="https://developer.spotify.com/web-api/endpoint-reference/">Web API Endpoint Reference</a>.
+                        </p>
+                        <h3>Requests</h3>
+                        <p class="lead">
+                        The API is a RESTful service that allows access via standard HTTPS requests such as GET and POST.
+                        </p>
+                        <h3>Responses</h3>
+                        <p class="lead">
+                        Data is returned as a JSON object.  Visit the <a href="https://developer.spotify.com/web-api/object-model/">Web API Object Model</a> for a overview of the objects returned by the endpoints.
+                        </p>
+                        <h3>Authentication</h3>
+                        <p class="lead">
+                        You don't need permission to access catalog content, but to access user data you will need  permission.  For more information, please visit the <a href="https://developer.spotify.com/web-api/authorization-guide/">Web API Authorization Guide</a>.
+                        </p>
                 </div>
             </div>
         </div>

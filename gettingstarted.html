@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Get Content</title>
+    <title>Getting Started</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -22,7 +22,7 @@
 
     <div id="wrapper">
 
-        <!-- Sidebar -->
+         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand"><a href="starthere.html">Start Here</a>
@@ -45,31 +45,37 @@
             <div class="content-header">
                 <h1>
                     <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
-                    Dashboard
+                    Getting Started
                 </h1>
             </div>
             <!-- Keep all page content within the page-content inset div! -->
             <div class="page-content inset">
-                <div class="row">
-                    <div class="col-md-12">
-                        <p class="lead">This simple sidebar template has a hint of JavaScript to make the template responsive. It also includes Font Awesome icon fonts.</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="well">The template still uses the default Bootstrap rows and columns.</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="well">But the full-width layout means that you wont be using containers.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p class="well">Three Column Example</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p class="well">Three Column Example</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p class="well">You get the idea! Do whatever you want in the page content area!</p>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2> Set Up Your Account</h2    >
+                            <section class="lead">
+                                <ol> <!-- ordered list -->
+                                    <li>To be able to use the API, you will need a Spotify account. To sign up for a free account, go to <a href="https://www.spotify.com/us/">Spotify</a>.</li>
+                                    <li>After your account has been created, you'll need to go to <a href="https://developer.spotify.com/my-applications/#!/">My Applications</a>.</li>
+                                    <li>Log in to Spotify</li>
+                                    <li>Create a new application
+                                    <br>
+                                    <img src="spotifyAssets/createapp.jpeg" class="img-thumbnail" alt="createapp">
+                                    </li>
+                                    <li>Add this  URL to Redirect URLs whitelist: http://localhost:8888/callback  </li>
+                                    <li>Save the application</li>
+                                    <li>Make note of your client ID and Client Secret Key. You'll need them later on to complete the tutorial.
+                                    <br>
+                                    <img src="spotifyAssets/credentials.jpeg" class="img-thumbnail" alt="credentials">
+                                    </li>
+                                </ol>
+                            </section>
+                            
+                        </div>
                     </div>
                 </div>
+            
             </div>
         </div>
 
