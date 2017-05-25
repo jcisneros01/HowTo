@@ -15,7 +15,7 @@
     <!-- Add custom CSS here -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
-
+9
 </head>
 
 <body>
@@ -52,112 +52,296 @@
             <div class="page-content inset">
                 <div class="row">
                     <div class="col-md-12">
-                        <p class="lead">This tutorial will show you how to create a small client side application that retrieves an artist's albums using the search endpoint. Before we write any code, lets go over how the Search API endpoint works.</p>
-                        <h3>Endpoint</h3>
-                        <p class="lead">The search endpoint via a GET request allows you to retrieve artists, albums, tracks and playlists that match a string. Below are the parameters it takes. q is the the query. Type sets the kind of information we are looking for. Market restricts the results to a country code. Limit sets the max amount of results to return. And offset sets the first result to return.</p> 
-                        <pre>URL: https://api.spotify.com/v1/search<br>HTTP method: GET<br>Request Parameters:<br><li>q: query<br><li>type: album, artist, playlist, track</li><li>market: country</li<br><li>limit: 1-50</li<br><li>offset: index 0 - 100,000</li></pre>
-                       <h3> Making a Request</h3>
-                       <p class="lead">For this example, we are going to request The Rolling Stone's albums and will return the 1st result. Below is the URL we will be sending in the GET request. We pass it 3 parameters: the query "The Rolling Stones", the type album, and a limit of 1. 
-                        <pre><code>https://api.spotify.com/v1/search?q=The+Rolling+Stones&type=album&limit=1</code></pre>
-                        <p class="lead">Copy and past the cURL command below into the terminal.</p>
-                       <pre>curl -X GET "https://api.spotify.com/v1/search?q=The+Rolling+Stones&amp;type=album&amp;limit=1" -H "Accept: application/json"</pre>
-                       <p class="lead">The request is sent to the server and it returns the  JSON below.</p>
-                    <pre class="pre-x-scrollable"><code class="json">{
-  &#34;albums&#34; : {
-    &#34;href&#34; : &#34;https://api.spotify.com/v1/search?query=The+Rolling+Stones&amp;type=album&amp;offset=0&amp;limit=1&#34;,
-    &#34;items&#34; : [ {
-      &#34;album_type&#34; : &#34;album&#34;,
-      &#34;artists&#34; : [ {
-        &#34;external_urls&#34; : {
-          &#34;spotify&#34; : &#34;https://open.spotify.com/artist/22bE4uQ6baNwSHPVcDxLCe&#34;
-        },
-        &#34;href&#34; : &#34;https://api.spotify.com/v1/artists/22bE4uQ6baNwSHPVcDxLCe&#34;,
-        &#34;id&#34; : &#34;22bE4uQ6baNwSHPVcDxLCe&#34;,
-        &#34;name&#34; : &#34;The Rolling Stones&#34;,
-        &#34;type&#34; : &#34;artist&#34;,
-        &#34;uri&#34; : &#34;spotify:artist:22bE4uQ6baNwSHPVcDxLCe&#34;
-      } ],
-      &#34;available_markets&#34; : [ &#34;CA&#34;, &#34;US&#34; ],
-      &#34;external_urls&#34; : {
-        &#34;spotify&#34; : &#34;https://open.spotify.com/album/4l4u9e9jSbotSXNjYfOugy&#34;
-      },
-      &#34;href&#34; : &#34;https://api.spotify.com/v1/albums/4l4u9e9jSbotSXNjYfOugy&#34;,
-      &#34;id&#34; : &#34;4l4u9e9jSbotSXNjYfOugy&#34;,
-      &#34;images&#34; : [ {
-        &#34;height&#34; : 640,
-        &#34;url&#34; : &#34;https://i.scdn.co/image/eda50e6eb9d59e339baf96b3b98d6e9ae8a8ee95&#34;,
-        &#34;width&#34; : 640
-      }, {
-        &#34;height&#34; : 300,
-        &#34;url&#34; : &#34;https://i.scdn.co/image/88169c4f1e5666f1120f04730891720976db1653&#34;,
-        &#34;width&#34; : 300
-      }, {
-        &#34;height&#34; : 64,
-        &#34;url&#34; : &#34;https://i.scdn.co/image/be1aba99b46127c747e4142ad23f2161b9b9871b&#34;,
-        &#34;width&#34; : 64
-      } ],
-      &#34;name&#34; : &#34;Let It Bleed&#34;,
-      &#34;type&#34; : &#34;album&#34;,
-      &#34;uri&#34; : &#34;spotify:album:4l4u9e9jSbotSXNjYfOugy&#34;
-    } ],
-    &#34;limit&#34; : 1,
-    &#34;next&#34; : &#34;https://api.spotify.com/v1/search?query=The+Rolling+Stones&amp;type=album&amp;offset=1&amp;limit=1&#34;,
-    &#34;offset&#34; : 0,
-    &#34;previous&#34; : null,
-    &#34;total&#34; : 468
+                        <p class="lead">Before we request any user data, we will need to get authorization.</p>
+                        <h2>Authorize Endpoint</h3>
+                        <p class="lead">We will be using implicit grant authorization. It's carried out client side and doesn't require a secret key. To request authorization the user is redirected to the /authorize  endpoint of the Accounts service and the necessary parameters are passed in the query string in the URL. The user is then asked to authorize access. When the user logs in they are redirected to the specified redirect url and we are supplied with  an access token. For more information on completing authorization visit the <a href="https://developer.spotify.com/web-api/authorization-guide/">Web API Authorization Guide</a>. </p> 
+                        <p class="lead"> Below is an example script to get authorization. The access token it retrieves will be stored in a global variable that can be used to make further API requests.</p> 
+               
+      <pre><code>(function() {
+
+  var stateKey = 'spotify_auth_state';
+
+  /**
+   * Obtains parameters from the hash of the URL
+   * @return Object
+   */
+  function getHashParams() {
+    var hashParams = {};
+    var e, r = /([^&;=]+)=?([^&;]*)/g,
+        q = window.location.hash.substring(1);
+    while ( e = r.exec(q)) {
+       hashParams[e[1]] = decodeURIComponent(e[2]);
+    }
+    return hashParams;
   }
-}</code></pre>
+
+  /**
+   * Generates a random string containing numbers and letters
+   * @param  {number} length The length of the string
+   * @return {string} The generated string
+   */
+  function generateRandomString(length) {
+    var text = '';
+    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (var i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  };
+
+  var userProfileSource = document.getElementById('user-profile-template').innerHTML,
+      userProfileTemplate = Handlebars.compile(userProfileSource),
+      userProfilePlaceholder = document.getElementById('user-profile');
+
+      oauthSource = document.getElementById('oauth-template').innerHTML,
+      oauthTemplate = Handlebars.compile(oauthSource),
+      oauthPlaceholder = document.getElementById('oauth');
+
+  var params = getHashParams();
+
+  var access_token = params.access_token,
+      state = params.state,
+      storedState = localStorage.getItem(stateKey);
+
+  if (access_token && (state == null || state !== storedState)) {
+    alert('There was an error during the authentication');
+  } else {
+    localStorage.removeItem(stateKey);
+    if (access_token) {
+      $.ajax({
+          url: 'https://api.spotify.com/v1/me/',
+          headers: {
+            'Authorization': 'Bearer ' + access_token
+          },
+          success: function(response) {
+            userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+            // console.log(response);
+
+            $('#login').hide();
+            $('#loggedin').show();
+          }
+      });
+    } else {
+        $('#login').show();
+        $('#loggedin').hide();
+    }
+
+    document.getElementById('login-button').addEventListener('click', function() {
+
+      var client_id = '6ce6626a1a9147248f643d01f9da3092'; // Your client id
+      var redirect_uri = 'http://localhost:8888/'; // Your redirect uri
+
+      var state = generateRandomString(16);
+
+      localStorage.setItem(stateKey, state);
+      var scope = 'user-read-private user-read-email user-library-read';
+
+      var url = 'https://accounts.spotify.com/authorize';
+      url += '?response_type=token';
+      url += '&client_id=' + encodeURIComponent(client_id);
+      url += '&scope=' + encodeURIComponent(scope);
+      url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
+      url += '&state=' + encodeURIComponent(state);
+
+      window.location = url;
+    }, false);
+  }
+})();</code></pre>
+                       <h2> Get saved tracks</h2>
+                       <p class="lead">Now that you're familiar with authorization, we will now show you how create a small client side application that retrieves a list of the songs saved in the current user's music library using the me/tracks endpoint. Before we write any code, lets go over how the me/tracks endpoint works.</p>
+                       <h3>Endpoint</h3>
+                        <p class="lead">The me/tracks endpoint via a GET request allows you to get a user's saved tracks.  Below are the parameters it takes.  limit sets the maximum number of tracks to return. offset sets the first result to return. And market restricts the results to a country code.</p> 
+                        <pre>URL: https://api.spotify.com/v1/me/tracks<br>HTTP method: GET<br>Request Parameters:<br><li>limit: 1-50<br><li>offset: index 0-49</li><li>market: country</li></pre>
+                        <h3> Making a Request</h3>
+                       <p class="lead">For this example, we are going to request the current users saved tracks and will return the 1st result. Below is the URL we will be sending in the GET request. We pass it 1 parameter: limit of 1. 
+                        <pre><code>https://api.spotify.com/v1/me/tracks?limit=1</code></pre>
+                         <p class="lead">Before you can execute the following command, you will need an access token. It will appear in the URL above after you log into your Spotify account at the end of this page. Copy and past the cURL command below into the terminal. Make sure to replace the curly braces with your access token.
+                        <pre>curl -X GET "https://api.spotify.com/v1/me/tracks?limit=1" -H "Accept: application/json" -H "Authorization: Bearer {access_token}"</pre>
+                       <p class="lead">The request is sent to the server and it returns an object like the example below.</p>
+                    <pre class="pre-x-scrollable"><code class="json">{
+  "href" : "https://api.spotify.com/v1/me/tracks?offset=0&limit=1",
+  "items" : [ {
+    "added_at" : "2017-05-14T23:47:33Z",
+    "track" : {
+      "album" : {
+        "album_type" : "album",
+        "artists" : [ {
+          "external_urls" : {
+            "spotify" : "https://open.spotify.com/artist/1nJvji2KIlWSseXRSlNYsC"
+          },
+          "href" : "https://api.spotify.com/v1/artists/1nJvji2KIlWSseXRSlNYsC",
+          "id" : "1nJvji2KIlWSseXRSlNYsC",
+          "name" : "The Velvet Underground",
+          "type" : "artist",
+          "uri" : "spotify:artist:1nJvji2KIlWSseXRSlNYsC"
+        }, {
+          "external_urls" : {
+            "spotify" : "https://open.spotify.com/artist/0IwlY33zbBXN7zlS9DP2Cj"
+          },
+          "href" : "https://api.spotify.com/v1/artists/0IwlY33zbBXN7zlS9DP2Cj",
+          "id" : "0IwlY33zbBXN7zlS9DP2Cj",
+          "name" : "Nico",
+          "type" : "artist",
+          "uri" : "spotify:artist:0IwlY33zbBXN7zlS9DP2Cj"
+        } ],
+        "available_markets" : [ "CA", "US" ],
+        "external_urls" : {
+          "spotify" : "https://open.spotify.com/album/4xwx0x7k6c5VuThz5qVqmV"
+        },
+        "href" : "https://api.spotify.com/v1/albums/4xwx0x7k6c5VuThz5qVqmV",
+        "id" : "4xwx0x7k6c5VuThz5qVqmV",
+        "images" : [ {
+          "height" : 635,
+          "url" : "https://i.scdn.co/image/4ce9f240d1a14d46f1fee662a0efca6e4e187280",
+          "width" : 640
+        }, {
+          "height" : 298,
+          "url" : "https://i.scdn.co/image/15d1c4895e1a4740316a6776975a304b7509d53f",
+          "width" : 300
+        }, {
+          "height" : 64,
+          "url" : "https://i.scdn.co/image/7ebbe5083c0a0752c77b405db21d2c0e60349be7",
+          "width" : 64
+        } ],
+        "name" : "The Velvet Underground & Nico 45th Anniversary",
+        "type" : "album",
+        "uri" : "spotify:album:4xwx0x7k6c5VuThz5qVqmV"
+      },
+      "artists" : [ {
+        "external_urls" : {
+          "spotify" : "https://open.spotify.com/artist/1nJvji2KIlWSseXRSlNYsC"
+        },
+        "href" : "https://api.spotify.com/v1/artists/1nJvji2KIlWSseXRSlNYsC",
+        "id" : "1nJvji2KIlWSseXRSlNYsC",
+        "name" : "The Velvet Underground",
+        "type" : "artist",
+        "uri" : "spotify:artist:1nJvji2KIlWSseXRSlNYsC"
+      }, {
+        "external_urls" : {
+          "spotify" : "https://open.spotify.com/artist/0IwlY33zbBXN7zlS9DP2Cj"
+        },
+        "href" : "https://api.spotify.com/v1/artists/0IwlY33zbBXN7zlS9DP2Cj",
+        "id" : "0IwlY33zbBXN7zlS9DP2Cj",
+        "name" : "Nico",
+        "type" : "artist",
+        "uri" : "spotify:artist:0IwlY33zbBXN7zlS9DP2Cj"
+      } ],
+      "available_markets" : [ "CA", "US" ],
+      "disc_number" : 1,
+      "duration_ms" : 262360,
+      "explicit" : false,
+      "external_ids" : {
+        "isrc" : "USPR36702763"
+      },
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/track/2J8Mbdpem8CiSZKRoZOIeG"
+      },
+      "href" : "https://api.spotify.com/v1/tracks/2J8Mbdpem8CiSZKRoZOIeG",
+      "id" : "2J8Mbdpem8CiSZKRoZOIeG",
+      "name" : "Run Run Run",
+      "popularity" : 37,
+      "preview_url" : "https://p.scdn.co/mp3-preview/65154eb649d7e7a992267e2ba09af6aa5329aa59?cid=8897482848704f2a8f8d7c79726a70d4",
+      "track_number" : 5,
+      "type" : "track",
+      "uri" : "spotify:track:2J8Mbdpem8CiSZKRoZOIeG"
+    }
+  } ],
+  "limit" : 1,
+  "next" : "https://api.spotify.com/v1/me/tracks?offset=1&limit=1",
+  "offset" : 0,
+  "previous" : null,
+  "total" : 130
+}
+</code></pre>
                     <h3>Code Example</h3>
-                    <p class="lead"> Now that we're familar with how the API works we are going to use it to make a webpage that searches for an artist's albums and displays the results. First, we will need a way to display the content. Create a new file with the HTML below.</p> 
-                    <pre><code>&lt;div class="col-md-6"&gt;<br> &lt;h1&gt;Get Albums&lt;/h1&gt;<br> &lt;form id="search-form"&gt;<br>   &lt;input type="text" id="query" value="" class="form-control" placeholder="Type an Artist Name"/&gt;<br>   &lt;input type="submit" id="search" class="btn btn-default" value="Search"/&gt;<br> &lt;/form&gt;<br> &lt;div id="results"&gt;&lt;/div&gt;<br>&lt;/div&gt;</code></pre>
-                     <p class="lead"> With our view created, we will now write a script that retrieves the content using AJAX. We open a get request and pass 2 parameters: the query and a type of album. We then pass in the parsed response into a function that displays the album covers to the page.</p> 
-                     <pre><code>//  Search Button Event Listener
-document.getElementById('search-form').addEventListener('submit', searchQuery);
+                    <p class="lead"> Now that we're familiar  with how the API works we are going to use it to make a simple web app that authenticates the user and  displays their saved tracks. First, we will need a way to display the content. Create a new file with the HTML below.</p> 
+<pre class="tCont hljs xml active"><span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>title<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">script</span>   <span class="hljs-attr">src</span>=<span class="hljs-string">"https://code.jquery.com/jquery-1.12.4.min.js"</span>   <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="</span>   <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>  
+      <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"col-md-12"</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"login"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Log in to view your saved tracks<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"login-button"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"btn btn-default"</span>&gt;</span>Log in with Spotify<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"loggedin"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"user-profile"</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"oauth"</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"user-profile-template"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/x-handlebars-template"</span>&gt;</span><span class="xml">
+          <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Logged in as {{display_name}}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"media"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"pull-left"</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"media-object"</span> <span class="hljs-attr">width</span>=<span class="hljs-string">"150"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"{{images.0.url}}"</span> /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"col-md-12"</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">dl</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"dl-horizontal"</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Display name<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"clearfix"</span>&gt;</span>{{display_name}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Id<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span>{{id}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Email<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span>{{email}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Spotify URI<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{external_urls.spotify}}"</span>&gt;</span>{{external_urls.spotify}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Link<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{href}}"</span>&gt;</span>{{href}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Profile Image<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"clearfix"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{images.0.url}}"</span>&gt;</span>{{images.0.url}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Country<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span>{{country}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">dl</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Saved Tracks<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"col-md-12"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"results"</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"oauth-template"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/x-handlebars-template"</span>&gt;</span><span class="xml">
+          <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>oAuth info<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dl</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"dl-horizontal"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Access token<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"text-overflow"</span>&gt;</span>{{access_token}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">dl</span>&gt;</span>
+        </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"script.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 
-// Get Albums
-function searchQuery(event) {
-    var query = document.getElementById("query").value;
-    var req = new XMLHttpRequest(); 
-    var url = "https://api.spotify.com/v1/search?q=" + query + "&type=album";
-    req.open("GET", url, true);
-    req.addEventListener('load', function() {
-      if(req.status >= 200 && req.status < 400){
-        var response = JSON.parse(req.responseText);
-        displayAlbums(response);
-      } else {
-          console.log("Error in network request: " + req.statusText);
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></pre>
+
+                     
+                <p class="lead"> With our view created, we will now write a script that retrieves the user's saved tracks. Using jquery we open a get request and pass in the URL. We then pass in the parsed response into a function that displays the saved tracks to the page.</p> 
+                <pre><code>// Get Tracks 
+       $.ajax({
+          url: 'https://api.spotify.com/v1/me/tracks',
+          headers: {
+            'Authorization': 'Bearer ' + access_token
+          },
+          success: function(response) {
+            displayTracks(response);
+          }
+      });
+  
+
+    function displayTracks(object) {
+      var tracksArray = object.items;
+      var results = document.getElementById("results");
+      console.log(results)
+      var list = document.createElement("OL");
+
+      for (var i = 0; i < tracksArray.length; i++) { 
+          var track = tracksArray[i].track.artists[0].name + ": " + tracksArray[i].track.name;
+          var node = document.createElement("LI");
+          var textnode = document.createTextNode(track);
+          node.appendChild(textnode);
+          list.appendChild(node);
       }
-    });
+      console.log(list);
 
-    req.send(null);
-    event.preventDefault();
-}   
-
-// Append albums to div
-function displayAlbums(object) {
-    var albumArray = object.albums.items;
-    var results = document.getElementById("results");
-    while (results.firstChild) {
-      results.removeChild(results.firstChild);
-    }
-    for (var i = 0; i < albumArray.length; i++) {   
-        var image = document.createElement("IMG");
-        image.className = "cover";
-        image.setAttribute("src", albumArray[i].images[0].url );
-        results.appendChild(image);
-    }
-}</code></pre>
-                     <p class="lead"> With our files created and with a little css magic, we get the result below.</p> 
-                     <script async src="//jsfiddle.net/cisnejos/Le41tv3a/7/embed/js,html,css/?accentColor=000000"></script>
-                    <div class="col-md-12">
-                        <h2>Get Albums</h2>
-                        <form id="search-form">
-                            <input type="text" id="query" value="" class="form-control" placeholder="Type an Artist Name"/>
-                            <input type="submit" id="search" class="btn btn-default" value="Search" />
-                        </form>
-                        <div id="results"></div>
-                    <script src="js/script.js"></script>
-                    </div>
+      results.appendChild(list);    
+    }</code></pre>    
+                <p class="lead"> Putting eveything together, we get the result below. Go ahead and log in to view the expected output.</p>    
                 </div>
             </div>
         </div>
@@ -174,6 +358,179 @@ function displayAlbums(object) {
         e.preventDefault();
         $("#wrapper").toggleClass("active");
     });
+    </script>
+
+<!-- oAuth spotify  web api library from https://github.com/spotify/web-api-auth-examples
+ --> 
+    <div class="col-md-12">
+      <div id="login">
+        <h1>Log in to view your saved tracks</h1>
+        <button id="login-button" class="btn btn-default">Log in with Spotify</button>
+      </div>
+      <div id="loggedin">
+        <div id="user-profile">
+        </div>
+        <div id="oauth">
+        </div>
+      </div>
+    </div>
+
+    <script id="user-profile-template" type="text/x-handlebars-template">
+      <h1>Logged in as {{display_name}}</h1>
+      <div class="media">
+        <div class="pull-left">
+          <img class="media-object" width="150" src="{{images.0.url}}" />
+        </div>
+        <div class="col-md-12">
+          <dl class="dl-horizontal">
+            <dt>Display name</dt><dd class="clearfix">{{display_name}}</dd>
+            <dt>Id</dt><dd>{{id}}</dd>
+            <dt>Email</dt><dd>{{email}}</dd>
+            <dt>Spotify URI</dt><dd><a href="{{external_urls.spotify}}">{{external_urls.spotify}}</a></dd>
+            <dt>Link</dt><dd><a href="{{href}}">{{href}}</a></dd>
+            <dt>Profile Image</dt><dd class="clearfix"><a href="{{images.0.url}}">{{images.0.url}}</a></dd>
+            <dt>Country</dt><dd>{{country}}</dd>
+          </dl>
+      </div>
+
+<!-- added div to display track results
+ -->
+      <h1>Saved Tracks</h1>
+      <div class="col-md-12" id="results">
+      </div>
+    </script>
+
+    <script id="oauth-template" type="text/x-handlebars-template">
+      <h2>oAuth info</h2>
+      <dl class="dl-horizontal">
+        <dt>Access token</dt><dd class="text-overflow">{{access_token}}</dd>
+      </dl>
+    </script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+    <script>
+      (function() {
+
+        var stateKey = 'spotify_auth_state';  //state key
+
+        /**
+         * Obtains parameters from the hash of the URL
+         * @return Object
+         */
+        function getHashParams() {
+          var hashParams = {};
+          var e, r = /([^&;=]+)=?([^&;]*)/g,
+              q = window.location.hash.substring(1);
+          while ( e = r.exec(q)) {
+             hashParams[e[1]] = decodeURIComponent(e[2]);
+          }
+          return hashParams;
+        }
+
+        /**
+         * Generates a random string containing numbers and letters
+         * @param  {number} length The length of the string
+         * @return {string} The generated string
+         */
+        function generateRandomString(length) {
+          var text = '';
+          var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+          for (var i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+          }
+          return text;
+        };
+
+        // Get template source and compile 
+        var userProfileSource = document.getElementById('user-profile-template').innerHTML,
+            userProfileTemplate = Handlebars.compile(userProfileSource),
+            userProfilePlaceholder = document.getElementById('user-profile');
+
+            oauthSource = document.getElementById('oauth-template').innerHTML,
+            oauthTemplate = Handlebars.compile(oauthSource),
+            oauthPlaceholder = document.getElementById('oauth');
+
+        // Params object from hash
+        var params = getHashParams();
+
+        // Assign params to variables
+        var access_token = params.access_token,
+            state = params.state,
+            storedState = localStorage.getItem(stateKey);
+
+        // If authenticated, then make call to retreive user info
+        if (access_token && (state == null || state !== storedState)) {
+          alert('There was an error during the authentication');
+        } else {
+          localStorage.removeItem(stateKey);
+          if (access_token) {
+            $.ajax({
+                url: 'https://api.spotify.com/v1/me/',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                success: function(response) {
+                  userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+                  $('#login').hide();
+                  $('#loggedin').show();
+                }
+            });
+          } else {
+              $('#login').show();
+              $('#loggedin').hide();
+          }
+
+          // added script to retrieve saved tracks
+             $.ajax({
+                url: 'https://api.spotify.com/v1/me/tracks',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                success: function(response) {
+                  displayTracks(response);
+                }
+            });
+        
+          // added script to display saved tracks
+          function displayTracks(object) {
+            var tracksArray = object.items;
+            var results = document.getElementById("results");
+            var list = document.createElement("OL");
+
+            for (var i = 0; i < tracksArray.length; i++) { 
+                var track = tracksArray[i].track.artists[0].name + ": " + tracksArray[i].track.name;
+                var node = document.createElement("LI");
+                var textnode = document.createTextNode(track);
+                node.appendChild(textnode);
+                list.appendChild(node);
+            }
+            results.appendChild(list);    
+          }
+        
+        // Add event listener to loggin button
+          document.getElementById('login-button').addEventListener('click', function() {
+
+            var client_id = '6ce6626a1a9147248f643d01f9da3092'; // Your client id
+            var redirect_uri = 'http://127.0.0.1:8080/getuserdata.html'; // Your redirect uri
+
+            var state = generateRandomString(16); // statekey
+
+            localStorage.setItem(stateKey, state); // Store state key
+            var scope = 'user-read-private user-read-email user-library-read';
+
+            var url = 'https://accounts.spotify.com/authorize';
+            url += '?response_type=token';
+            url += '&client_id=' + encodeURIComponent(client_id);
+            url += '&scope=' + encodeURIComponent(scope);
+            url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
+            url += '&state=' + encodeURIComponent(state);
+
+            // Redirect URL to make get request
+            window.location = url;
+          }, false);
+        }
+      })();
     </script>
 </body>
 
