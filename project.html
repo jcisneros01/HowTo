@@ -207,7 +207,7 @@
 }</pre>
 
 
-                     <p class="lead"> Putting everything together we get the result below. Go ahead and log in, search for a playlist and follow it to add it to your account.</p> 
+                     <p class="lead"> Putting everything together we get the result below. You can use the test spotify account to log in. The username is <b>osutestapp</b> and the password is <b>oregonstate12</b>. Go ahead and log in, search for a playlist and follow it to add it to your account. It will print the user's playlists to the console when a playlist is added, so you can verify it worked.</p> 
 
                     <div class="col-md-12">
                         <!-- oAuth spotify  web api library from https://github.com/spotify/web-api-auth-examples
@@ -454,6 +454,26 @@
                   async: false
                 });
 
+                $.ajax({
+                  url: 'https://api.spotify.com/v1/users/osutestapp/playlists',
+                  type: 'GET',
+                  headers: {
+                    'Authorization': 'Bearer ' + access_token
+                  },
+                  success: function(response) {
+                    // console.log(response);
+                    printPlaylist(response);
+                  }, 
+                  async: false
+                });
+
+                function printPlaylist(object) {
+                  var playlistsArrayStore = object.items;
+                  for (var i = 0; i < playlistsArrayStore.length; i++) {
+                      console.log(playlistsArrayStore[i].name);
+                  }
+                }
+
             }
 
           }
@@ -467,7 +487,7 @@
             var state = generateRandomString(16); // statekey
 
             localStorage.setItem(stateKey, state); // Store state key
-            var scope = 'user-read-private user-read-email user-library-read playlist-modify-public playlist-modify-private';
+            var scope = 'user-read-private user-read-email user-library-read playlist-read-private playlist-modify-public playlist-modify-private';
 
             var url = 'https://accounts.spotify.com/authorize';
             url += '?response_type=token';
