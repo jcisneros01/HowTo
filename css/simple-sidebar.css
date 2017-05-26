@@ -127,4 +127,10 @@
     background-size: cover;
 }
 
+#logo {
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: 0 auto;
+}
 
