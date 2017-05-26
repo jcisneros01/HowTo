@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Get User Data</title>
+    <title>Example Project</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -15,7 +15,7 @@
     <!-- Add custom CSS here -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
-9
+
 </head>
 
 <body>
@@ -35,7 +35,7 @@
                 </li>
                 <li><a href="getuserdata.html">Get User Data</a>
                 </li>
-                <li><a href="#">Project</a>
+                <li><a href="project.html">Project</a>
                 </li>    
             </ul>
         </div>
@@ -51,6 +51,237 @@
             <!-- Keep all page content within the page-content inset div! -->
             <div class="page-content inset">
                 <div class="row">
+
+                    <div class="col-md-12">
+                        <p class="lead">Now that you're familiar with requesting user and catalog content, we will now go over a small project that utilizes both. We will create a small client side application that retrieves playlists using the search endpoint. It will show you a preview of the playlist and then will allow you to add it to your spotify account. Before we write any code, lets go over the endpoints we will be using.</p>
+                        <h3>Endpoints</h3>
+                        <p class="lead"> We're going to use the search endpoint to return the playlists. The get a playlist's tracks endpoint to retrieve the playlist's tracks. And the follow a playlist to add playlists to our account. For more information about the endpoints we will be using, please visit the  <a href="https://developer.spotify.com/web-api/endpoint-reference/">Web API Endpoint Reference</a>.</p>
+                        <h3>Code Example</h3>
+                        <p class="lead"> Now that you're familar with the API endpoints we will be using, lets create our view. Create a new file with the HTML below.</p> 
+                        <pre class="tCont hljs xml active">  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"col-md-12"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"login"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Log in to view your saved tracks<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"login-button"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"btn btn-default"</span>&gt;</span>Log in with Spotify<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"loggedin"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"user-profile"</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"oauth"</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"user-profile-template"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/x-handlebars-template"</span>&gt;</span><span class="xml">
+    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Logged in as {{display_name}}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"media"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"pull-left"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"media-object"</span> <span class="hljs-attr">width</span>=<span class="hljs-string">"150"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"{{images.0.url}}"</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"col-md-12"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">dl</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"dl-horizontal"</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Display name<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"clearfix"</span>&gt;</span>{{display_name}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Id<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span>{{id}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Email<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span>{{email}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Spotify URI<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{external_urls.spotify}}"</span>&gt;</span>{{external_urls.spotify}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Link<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{href}}"</span>&gt;</span>{{href}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Profile Image<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"clearfix"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{images.0.url}}"</span>&gt;</span>{{images.0.url}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Country<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span>&gt;</span>{{country}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">dl</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"oauth-template"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/x-handlebars-template"</span>&gt;</span><span class="xml">
+    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>oAuth info<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">dl</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"dl-horizontal"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>Access token<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">dd</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"text-overflow"</span>&gt;</span>{{access_token}}<span class="hljs-tag">&lt;/<span class="hljs-name">dd</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">dl</span>&gt;</span>
+  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"col-md-12"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Get Playlists<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"search-form"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"query"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">""</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"form-control"</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"Type keyword"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"search"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"btn btn-default"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"Search"</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"playlistResults"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>  
+</pre>
+                         <p class="lead"> With our view created, we will now write a script that retrieves the playlists using AJAX. We then pass the response we receive to a function that retrieves the playlists tracks. It then displays the playlists and their tracks and adds follow buttons for each one.</p> 
+
+<pre class="tCont  active hljs javascript"><span class="hljs-comment">//  Search Button Event Listener</span>
+<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'search-form'</span>).addEventListener(<span class="hljs-string">'submit'</span>, searchQuery);
+
+<span class="hljs-comment">// Get playlists</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">searchQuery</span>(<span class="hljs-params">event</span>) </span>{
+  <span class="hljs-keyword">var</span> query = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"query"</span>).value;
+  <span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> XMLHttpRequest(); 
+  <span class="hljs-keyword">var</span> url = <span class="hljs-string">"https://api.spotify.com/v1/search?q="</span> + query + <span class="hljs-string">"&amp;type=playlist&amp;limit=5"</span>;
+  req.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+  req.addEventListener(<span class="hljs-string">'load'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">if</span>(req.status &gt;= <span class="hljs-number">200</span> &amp;&amp; req.status &lt; <span class="hljs-number">400</span>){
+      <span class="hljs-keyword">var</span> response = <span class="hljs-built_in">JSON</span>.parse(req.responseText);
+      <span class="hljs-comment">// console.log(response);</span>
+      displayPlaylist(response);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Error in network request: "</span> + req.statusText);
+    }
+  });
+  
+  req.send(<span class="hljs-literal">null</span>);
+  event.preventDefault();
+} 
+
+
+
+<span class="hljs-comment">// Script to display playlists</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayPlaylist</span>(<span class="hljs-params">object</span>) </span>{
+  <span class="hljs-keyword">var</span> playlistArray = object.playlists.items;
+  <span class="hljs-keyword">var</span> playlistResults = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"playlistResults"</span>);
+  <span class="hljs-keyword">while</span> (playlistResults.firstChild) {
+    playlistResults.removeChild(playlistResults.firstChild);
+  }
+  <span class="hljs-keyword">var</span> list = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"dl"</span>);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; playlistArray.length; i++) {
+    <span class="hljs-keyword">var</span> playlist = playlistArray[i].name;
+    <span class="hljs-keyword">var</span> node = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"dt"</span>);
+    <span class="hljs-keyword">var</span> followURL = playlistArray[i].href + <span class="hljs-string">"/followers"</span>; <span class="hljs-comment">// Follow API URL for id</span>
+    <span class="hljs-keyword">var</span> tracksURL = playlistArray[i].tracks.href; <span class="hljs-comment">// Playlist API URL </span>
+    node.innerHTML = <span class="hljs-string">"&lt;span&gt;"</span> + playlist + <span class="hljs-string">"&lt;/span&gt; &lt;button class='editbtn' id='"</span> + followURL + <span class="hljs-string">"'"</span> + <span class="hljs-string">"&gt;Follow&lt;/button&gt;"</span>;
+
+    <span class="hljs-comment">// Get playlist tracks</span>
+    list.appendChild(node);
+      $.ajax({
+         url: tracksURL,
+         headers: {
+           <span class="hljs-string">'Authorization'</span>: <span class="hljs-string">'Bearer '</span> + access_token
+         },
+         success: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+           displayTracks(response);
+         }, 
+         <span class="hljs-keyword">async</span>: <span class="hljs-literal">false</span>
+       });
+
+      <span class="hljs-comment">// Append to list</span>
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayTracks</span>(<span class="hljs-params">object</span>) </span>{
+        <span class="hljs-keyword">var</span>  tracksArray = object.items;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">10</span>; j++) { 
+          <span class="hljs-keyword">var</span> trackNode = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"dd"</span>);
+          <span class="hljs-keyword">var</span> trackName = tracksArray[j].track.artists[<span class="hljs-number">0</span>].name + <span class="hljs-string">": "</span> + tracksArray[j].track.name;
+          <span class="hljs-keyword">var</span> trackNameTextNode = <span class="hljs-built_in">document</span>.createTextNode(trackName);
+          trackNode.appendChild(trackNameTextNode);
+          list.appendChild(trackNode);
+        }
+      }      
+  }
+
+  <span class="hljs-comment">// Append list to div</span>
+  playlistResults.appendChild(list); 
+<span class="hljs-comment">//  Search Button Event Listener</span>
+<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'search-form'</span>).addEventListener(<span class="hljs-string">'submit'</span>, searchQuery);
+
+<span class="hljs-comment">// Get playlists</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">searchQuery</span>(<span class="hljs-params">event</span>) </span>{
+  <span class="hljs-keyword">var</span> query = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"query"</span>).value;
+  <span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> XMLHttpRequest(); 
+  <span class="hljs-keyword">var</span> url = <span class="hljs-string">"https://api.spotify.com/v1/search?q="</span> + query + <span class="hljs-string">"&amp;type=playlist&amp;limit=5"</span>;
+  req.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+  req.addEventListener(<span class="hljs-string">'load'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">if</span>(req.status &gt;= <span class="hljs-number">200</span> &amp;&amp; req.status &lt; <span class="hljs-number">400</span>){
+      <span class="hljs-keyword">var</span> response = <span class="hljs-built_in">JSON</span>.parse(req.responseText);
+      <span class="hljs-comment">// console.log(response);</span>
+      displayPlaylist(response);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Error in network request: "</span> + req.statusText);
+    }
+  });
+  
+  req.send(<span class="hljs-literal">null</span>);
+  event.preventDefault();
+} 
+
+<span class="hljs-comment">// Script to display playlists</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayPlaylist</span>(<span class="hljs-params">object</span>) </span>{
+  <span class="hljs-keyword">var</span> playlistArray = object.playlists.items;
+  <span class="hljs-keyword">var</span> playlistResults = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"playlistResults"</span>);
+  <span class="hljs-keyword">while</span> (playlistResults.firstChild) {
+    playlistResults.removeChild(playlistResults.firstChild);
+  }
+  <span class="hljs-keyword">var</span> list = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"dl"</span>);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; playlistArray.length; i++) {
+    <span class="hljs-keyword">var</span> playlist = playlistArray[i].name;
+    <span class="hljs-keyword">var</span> node = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"dt"</span>);
+    <span class="hljs-keyword">var</span> followURL = playlistArray[i].href + <span class="hljs-string">"/followers"</span>; <span class="hljs-comment">// Follow API URL for id</span>
+    <span class="hljs-keyword">var</span> tracksURL = playlistArray[i].tracks.href; <span class="hljs-comment">// Playlist API URL </span>
+    node.innerHTML = <span class="hljs-string">"&lt;span&gt;"</span> + playlist + <span class="hljs-string">"&lt;/span&gt; &lt;button class='editbtn' id='"</span> + followURL + <span class="hljs-string">"'"</span> + <span class="hljs-string">"&gt;Follow&lt;/button&gt;"</span>;
+
+    <span class="hljs-comment">// Get playlist tracks</span>
+    list.appendChild(node);
+      $.ajax({
+         url: tracksURL,
+         headers: {
+           <span class="hljs-string">'Authorization'</span>: <span class="hljs-string">'Bearer '</span> + access_token
+         },
+         success: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+           displayTracks(response);
+         }, 
+         <span class="hljs-keyword">async</span>: <span class="hljs-literal">false</span>
+       });
+
+      <span class="hljs-comment">// Append to list</span>
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayTracks</span>(<span class="hljs-params">object</span>) </span>{
+        <span class="hljs-keyword">var</span>  tracksArray = object.items;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">10</span>; j++) { 
+          <span class="hljs-keyword">var</span> trackNode = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"dd"</span>);
+          <span class="hljs-keyword">var</span> trackName = tracksArray[j].track.artists[<span class="hljs-number">0</span>].name + <span class="hljs-string">": "</span> + tracksArray[j].track.name;
+          <span class="hljs-keyword">var</span> trackNameTextNode = <span class="hljs-built_in">document</span>.createTextNode(trackName);
+          trackNode.appendChild(trackNameTextNode);
+          list.appendChild(trackNode);
+        }
+      }      
+  }
+
+  <span class="hljs-comment">// Append list to div</span>
+  playlistResults.appendChild(list); </pre>
+
+                    <p class="lead"> Finally, we add event listeners to our follow buttons. When they are pressed it will trigger an ajax request that will add the playlist to the current user's account.</p> 
+<pre class="tCont  active hljs javascript"><span class="hljs-comment">// Append list to div</span>
+playlistResults.appendChild(list); 
+
+<span class="hljs-comment">// Add event listener to buttons   </span>
+<span class="hljs-keyword">var</span> followButtons = <span class="hljs-built_in">document</span>.getElementsByClassName(<span class="hljs-string">"editbtn"</span>);
+
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; followButtons.length; i++) {
+
+  followButtons[i].addEventListener(<span class="hljs-string">"click"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>)</span>{
+    followPlaylist(event.target.id);
+  });
+
+}
+
+<span class="hljs-comment">// Add playlist to user account</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">followPlaylist</span>(<span class="hljs-params">url</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(url);
+
+   $.ajax({
+      url: url,
+      type: <span class="hljs-string">'PUT'</span>,
+      headers: {
+        <span class="hljs-string">'Authorization'</span>: <span class="hljs-string">'Bearer '</span> + access_token
+      },
+      success: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+
+      }, 
+      <span class="hljs-keyword">async</span>: <span class="hljs-literal">false</span>
+    });
+
+}</pre>
+
+
+                     <p class="lead"> Putting everything together we get the result below. Go ahead and log in, search for a playlist and follow it to add it to your account.</p> 
+
                     <div class="col-md-12">
                         <!-- oAuth spotify  web api library from https://github.com/spotify/web-api-auth-examples
                          --> 
@@ -100,6 +331,7 @@
                             </script>
 
                             <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+                        <div class="col-md-12">
                         <h2>Get Playlists</h2>
                         <form id="search-form">
                             <input type="text" id="query" value="" class="form-control" placeholder="Type keyword"/>
@@ -107,7 +339,7 @@
                         </form>
                         <br>
                         <div id="playlistResults"></div>
-                        
+                      </div>  
                 </div>
             </div>
         </div>
@@ -202,7 +434,7 @@
           //  Search Button Event Listener
           document.getElementById('search-form').addEventListener('submit', searchQuery);
 
-          // Get Albums
+          // Get playlists
           function searchQuery(event) {
             var query = document.getElementById("query").value;
             var req = new XMLHttpRequest(); 
@@ -224,7 +456,7 @@
 
          
         
-          // added script to display playlists
+          // Script to display playlists
           function displayPlaylist(object) {
             var playlistArray = object.playlists.items;
             var playlistResults = document.getElementById("playlistResults");
@@ -239,6 +471,7 @@
               var tracksURL = playlistArray[i].tracks.href; // Playlist API URL 
               node.innerHTML = "<span>" + playlist + "</span> <button class='editbtn' id='" + followURL + "'" + ">Follow</button>";
 
+              // Get playlist tracks
               list.appendChild(node);
                 $.ajax({
                    url: tracksURL,
@@ -246,7 +479,6 @@
                      'Authorization': 'Bearer ' + access_token
                    },
                    success: function(response) {
-                     // console.log(response);
                      displayTracks(response);
                    }, 
                    async: false
@@ -265,9 +497,10 @@
                 }      
             }
 
+            // Append list to div
             playlistResults.appendChild(list); 
 
-            // Add event lister to buttons   
+            // Add event listener to buttons   
             var followButtons = document.getElementsByClassName("editbtn");
 
             for (var i = 0; i < followButtons.length; i++) {
@@ -278,6 +511,7 @@
 
             }
             
+            // Add playlist to user account
             function followPlaylist(url) {
               console.log(url);
 
@@ -288,7 +522,7 @@
                     'Authorization': 'Bearer ' + access_token
                   },
                   success: function(response) {
-                    displayTracks(response);
+
                   }, 
                   async: false
                 });

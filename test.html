@@ -1,25 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<script async src="//jsfiddle.net/c284dowh/6/embed/js/"></script>
+</body>
+</html>
 
-
-
-
-<div id="playlistResults"><dl><dt>Indie/Rock: </dt><dd>Vance Joy: Riptide</dd><dd>Two Door Cinema Club: What You Know</dd><dd>Two Door Cinema Club: Something Good Can Work</dd><dd>Two Door Cinema Club: Undercover Martyn</dd><dd>Two Door Cinema Club: Changing Of The Seasons</dd><dd>Mike Posner: Cooler Than Me - Single Mix</dd><dd>Arctic Monkeys: Do I Wanna Know?</dd><dd>Arctic Monkeys: Fluorescent Adolescent</dd><dd>Kings of Leon: Sex on Fire</dd><dd>Kings of Leon: Use Somebody</dd><dt>indie rock: <button class="editbtn" id="car">Add</button></button></dt><dd>Velour: The Way She Said</dd><dd>The Delta Riggs: Supersonic Casualties</dd><dd>Big Data: Dangerous (feat. Joywave)</dd><dd>Alpine: Gasoline</dd><dd>alt-J: Left Hand Free - Lido Remix</dd><dd>Ryan Hemsworth: Hurt Me</dd><dd>Cage The Elephant: Cigarette Daydreams</dd><dd>Jamie T: Zombie</dd><dd>Vampire Weekend: Step</dd><dd>New Politics: Harlem</dd><dt>Concentración Indie Rock:</dt><dd>Explosions In The Sky: The Long Spring</dd><dd>John Frusciante: Murderers</dd><dd>Pol Del Sur: Botánica Aplicada</dd><dd>Autumn Comets: Todos Están Esperando</dd><dd>Air: Venus</dd><dd>múm: We Have a Map of the Piano</dd><dd>Boraj: La Costa</dd><dd>This Will Destroy You: Dustism</dd><dd>Valley of the Giants: Westworld</dd><dd>Omelette du Fromage: Vizcachas versus Vicuñas</dd><dt>Rock Indie\Alternativo:</dt><dd>Arctic Monkeys: Do I Wanna Know?</dd><dd>Arctic Monkeys: Fluorescent Adolescent</dd><dd>Arctic Monkeys: One for the Road</dd><dd>Arctic Monkeys: R U Mine?</dd><dd>Arctic Monkeys: Mad Sounds</dd><dd>Arctic Monkeys: Fireside</dd><dd>Arctic Monkeys: I Wanna Be Yours</dd><dd>Arctic Monkeys: Why'd You Only Call Me When You're High?</dd><dd>Cage The Elephant: Ain't No Rest for the Wicked - Original Version</dd><dd>The Smiths: Please, Please, Please Let Me Get What I Want - 2008 Remastered Version</dd><dt>Summer Indie Rock:</dt><dd>Vampire Weekend: Worship You</dd><dd>Tame Impala: The Less I Know The Better</dd><dd>Phoenix: Entertainment</dd><dd>Foster The People: Call It What You Want</dd><dd>The Whitest Boy Alive: Courage</dd><dd>The Arcs: Stay In My Corner</dd><dd>Vampire Weekend: Giving Up The Gun</dd><dd>Phoenix: Lisztomania</dd><dd>Two Door Cinema Club: Undercover Martyn</dd><dd>Generationals: Spinoza</dd></dl></div>
-
-<script>
-var listTitle = document.getElementsByTagName("dt")[0];
-var playlistTitle = "Indie Rock";
-listTitle.innerHTML = "<span>" + playlistTitle + "</span> <button class='editbtn'>Follow</button>";
-listTitle.id = playlistTitle;
-var buttons = document.getElementsByClassName("editbtn");
-// console.log(listTitle);
-var node = buttons.item(0);
-console.log();
-
-</script>
-
-
-
-            
-
-
-
-curl -X PUT "https://api.spotify.com/v1/users/124195916/playlists/7zczm0DZqEFOV7baImm8mc/followers" -H "Accept: application/json" -H "Authorization: Bearer BQDaxv8v6VlcWJgGjU5XL5EwcDt0J3pAtH3moKD9pYDtsqVsV-pDAAB1pNu9xnBtShh-6bWf_CXJr9QTw8i-YtuWYjLgvNJ_dY68Q87p_95BQz4gTmpNcPdM8Br4CSCj5cFC_zSGZ1DXtC9meLRjw-tFtfhnWT_mdItACGSBbyW_XFKDcKWLFH31If8ksabPJCaY0TBlNpBb0_4c-MKllRQUJxvUn6AbtkFvVox5KmJGr5rtt1g5Asxyf4uAXF_1DiVx-BT0fiPy" -H "Content-Type: application/json" --data "{\"public\":true}"
