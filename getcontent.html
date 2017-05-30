@@ -148,15 +148,68 @@ function displayAlbums(object) {
     }
 }</code></pre>
                      <p class="lead"> With our files created and with a little css magic, we get the result below.</p> 
-                    <div class="col-md-12">
+                    
+                     <div class="col-md-12">
+                        <!-- oAuth spotify  web api library from https://github.com/spotify/web-api-auth-examples
+                         --> 
+                            <div class="col-md-12">
+                              <div id="login">
+                                <h1>Log in to save playlists</h1>
+                                <button id="login-button" class="btn btn-default">Log in with Spotify</button>
+                              </div>
+                              <div id="loggedin">
+                                <div id="user-profile">
+                                </div>
+                                <div id="oauth">
+                                </div>
+                              </div>
+                            </div>
+
+                            <script id="user-profile-template" type="text/x-handlebars-template">
+                              <h1>Logged in as {{display_name}}</h1>
+                              <div class="media">
+                                <div class="pull-left">
+                                  <img class="media-object" width="150" src="{{images.0.url}}" />
+                                </div>
+                                <div class="col-md-12">
+                                  <dl class="dl-horizontal">
+                                    <dt>Display name</dt><dd class="clearfix">{{display_name}}</dd>
+                                    <dt>Id</dt><dd>{{id}}</dd>
+                                    <dt>Email</dt><dd>{{email}}</dd>
+                                    <dt>Spotify URI</dt><dd><a href="{{external_urls.spotify}}">{{external_urls.spotify}}</a></dd>
+                                    <dt>Link</dt><dd><a href="{{href}}">{{href}}</a></dd>
+                                    <dt>Profile Image</dt><dd class="clearfix"><a href="{{images.0.url}}">{{images.0.url}}</a></dd>
+                                    <dt>Country</dt><dd>{{country}}</dd>
+                                  </dl>
+                              </div>
+
+<!--                         added div to display track results
+ -->                        
+                          <!--     <h1>Saved Tracks</h1>
+                              <div class="col-md-12" id="results"> -->
+                              </div>
+                            </script>
+
+                            <script id="oauth-template" type="text/x-handlebars-template">
+                              <h2>oAuth info</h2>
+                              <dl class="dl-horizontal">
+                                <dt>Access token</dt><dd class="text-overflow">{{access_token}}</dd>
+                              </dl>
+                            </script>
+
+                            <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+                       <div class="col-md-12">
                         <h2>Get Albums</h2>
                         <form id="search-form">
                             <input type="text" id="query" value="" class="form-control" placeholder="Type an Artist Name"/>
                             <input type="submit" id="search" class="btn btn-default" value="Search" />
                         </form>
                         <div id="results"></div>
-                    <script src="js/script.js"></script>
                     </div>
+                </div>
+
+
+
                 </div>
             </div>
         </div>
@@ -174,6 +227,8 @@ function displayAlbums(object) {
         $("#wrapper").toggleClass("active");
     });
     </script>
+    <script src="js/script.js"></script>
+
 </body>
 
 </html>

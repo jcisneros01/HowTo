@@ -45,7 +45,7 @@
             <div class="content-header">
                 <h1>
                     <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
-                    Get User Data
+                    Example Project
                 </h1>
             </div>
             <!-- Keep all page content within the page-content inset div! -->
@@ -361,27 +361,44 @@
           //  Search Button Event Listener
           document.getElementById('search-form').addEventListener('submit', searchQuery);
 
+
           // Get playlists
           function searchQuery(event) {
             var query = document.getElementById("query").value;
-            var req = new XMLHttpRequest(); 
+            // var req = new XMLHttpRequest(); 
             var url = "https://api.spotify.com/v1/search?q=" + query + "&type=playlist&limit=5";
-            req.open("GET", url, true);
-            req.addEventListener('load', function() {
-              if(req.status >= 200 && req.status < 400){
-                var response = JSON.parse(req.responseText);
-                // console.log(response);
-                displayPlaylist(response);
-              } else {
-                  console.log("Error in network request: " + req.statusText);
-              }
-            });
+            // req.open("GET", url, true);
+            // req.setRequestHeader('Authorization': 'Bearer ' + access_token);
+            // req.addEventListener('load', function() {
+            //   if(req.status >= 200 && req.status < 400){
+            //     var response = JSON.parse(req.responseText);
+            //     // console.log(response);
+            //     displayPlaylist(response);
+            //   } else {
+            //       console.log("Error in network request: " + req.statusText);
+            //   }
+            // });
             
-            req.send(null);
+            // Change ajax to jquery due to API oauth req change
+            $.ajax({
+                    url: url,
+                    headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                    data: {
+                        q: query,
+                        type: 'album'
+                    },
+                    success: function (response) {
+                        displayPlaylist(response);
+                    }
+                });
+
+            // req.send(null);
             event.preventDefault();
           } 
 
-         
+      
         
           // Script to display playlists
           function displayPlaylist(object) {
@@ -483,6 +500,7 @@
 
             var client_id = '6ce6626a1a9147248f643d01f9da3092'; // Your client id
             var redirect_uri = 'http://web.engr.oregonstate.edu/~cisnejos/HowTo/project.html'; // Your redirect uri
+            // var redirect_uri = 'http://127.0.0.1:8080/project.html'; // Your redirect uri
 
             var state = generateRandomString(16); // statekey
 
