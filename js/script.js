@@ -131,7 +131,7 @@
           document.getElementById('login-button').addEventListener('click', function() {
 
             var client_id = '6ce6626a1a9147248f643d01f9da3092'; // Your client id
-            var redirect_uri = 'http://web.engr.oregonstate.edu/~cisnejos/HowTo/project.html'; // Your redirect uri
+            var redirect_uri = 'http://web.engr.oregonstate.edu/~cisnejos/HowTo/getcontent.html'; // Your redirect uri
             // var redirect_uri = 'http://127.0.0.1:8080/getcontent.html'; // Your redirect uri
 
             var state = generateRandomString(16); // statekey
